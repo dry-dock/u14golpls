@@ -1,4 +1,4 @@
-FROM drydock/u14gol:prod
+FROM drydock/u14pls:prod
 
 ADD . /tmp
 
