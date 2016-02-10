@@ -1,5 +1,32 @@
 language: python
 
-install: true
+python:
+    - 2.7
 
-script: true
+build:
+  pre_ci:
+    # Always pull the latest base image to avoid any cached images on the host
+    - docker pull drydock/u14pls:prod
+    - docker build --rm -t drydock/u14golpls:tip .
+
+  pre_ci_boot:
+    image_name: drydock/u14golpls
+    image_tag: tip
+    pull: false
+
+  ci:
+    # We can add sanity checks to ensure the image was built successfully here
+    - . $HOME/.gvm/scripts/gvm
+    - gvm use go1.1
+    - gvm use go1.2
+    - gvm use go1.3
+    - gvm use go1.4
+    - gvm use go1.5
+
+  on_success:
+    - if [ "$IS_PULL_REQUEST" != true ]; then docker push drydock/u14golpls:tip; fi
+
+integrations:
+  hub:
+    - integrationName: "dockerhub"
+      type: "docker"
